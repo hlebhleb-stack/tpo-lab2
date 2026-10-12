@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ИС Банк</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #111318;
+      --surface: #1a1d24;
+      --surface-2: #22262f;
+      --text: #e8e9ec;
+      --muted: #6b7280;
+      --accent: #c8a96e;
+      --accent-dim: rgba(200, 169, 110, 0.12);
+      --border: #2a2d36;
+      --error: #f87171;
+      --error-dim: rgba(248, 113, 113, 0.1);
+      --success: #86efac;
+      --success-dim: rgba(134, 239, 172, 0.1);
+
+      --text-xl: 18px;
+      --text-lg: 15px;
+      --text-base: 13px;
+      --text-sm: 11px;
+    }
+
+    body {
+      font-family: 'Epilogue', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: var(--text-base);
+      line-height: 1.6;
+    }
+
+    /* Layout */
+    .page { display: none; min-height: 100vh; }
+    .page.active { display: flex; flex-direction: column; }
+
+    .inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 32px;
+      width: 100%;
+    }
+
+    /* Login page */
+    #page-login {
+      align-items: center;
+      justify-content: center;
+    }
+    .login-box {
+      width: 100%;
+      max-width: 360px;
+      padding: 0 20px;
+    }
+    .auth-wordmark {
+      font-size: var(--text-xl);
+      font-weight: 500;
+      letter-spacing: -0.3px;
+      margin-bottom: 28px;
+      color: var(--text);
+    }
+
+    /* Auth tabs */
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 24px;
+    }
+    .auth-tab {
+      flex: 1;
+      padding: 8px 0;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      color: var(--muted);
+      font-family: inherit;
+      font-size: var(--text-base);
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .auth-tab.active { color: var(--text); border-bottom-color: var(--accent); }
+
+    /* Form elements */
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block;
+      font-size: var(--text-sm);
+      color: var(--muted);
+      margin-bottom: 5px;
+      letter-spacing: 0.02em;
+    }
+    .field label .req {
+      color: var(--error);
+      margin-left: 3px;
+    }
+    .field input, .field textarea, .field select {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 9px 12px;
+      font-family: inherit;
+      font-size: var(--text-base);
+      border-radius: 6px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .field input::placeholder, .field textarea::placeholder {
+      color: var(--muted);
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      border-color: var(--accent);
+    }
+    .field.error input, .field.error textarea, .field.error select {
+      border-color: var(--error);
+      background: var(--error-dim);
+    }
+    .field-error {
+      font-size: var(--text-sm);
+      color: var(--error);
+      margin-top: 4px;
+      display: none;
+    }
+    .field.error .field-error { display: block; }
+
+    .field select { appearance: none; cursor: pointer; }
+    .field textarea { resize: vertical; min-height: 80px; }
+
+    .btn {
+      width: 100%;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: var(--text-base);
+      font-weight: 500;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+    .btn:hover { opacity: 0.88; }
+    .btn-primary { background: var(--accent); color: #111318; }
+    .btn-ghost { background: var(--surface); color: var(--text); border: 1px solid var(--border); }
+
+    /* Nav */
+    nav {
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 32px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .nav-wordmark {
+      font-size: var(--text-base);
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 0.04em;
+    }
+    .nav-links { display: flex; gap: 2px; }
+    .nav-link {
+      padding: 5px 12px;
+      border-radius: 5px;
+      font-size: var(--text-base);
+      color: var(--muted);
+      cursor: pointer;
+      border: none;
+      background: none;
+      font-family: inherit;
+      transition: color 0.15s, background 0.15s;
+    }
+    .nav-link:hover { color: var(--text); background: var(--surface); }
+    .nav-link.active { color: var(--text); background: var(--surface-2); }
+    .nav-user { font-size: var(--text-sm); color: var(--muted); display: flex; align-items: center; gap: 10px; }
+    .nav-user span { color: var(--text); font-size: var(--text-base); }
+    .nav-logout { background: none; border: none; color: var(--muted); font-family: inherit; font-size: var(--text-sm); cursor: pointer; }
+    .nav-logout:hover { color: var(--text); }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      padding: 36px 32px;
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .section-title {
+      font-size: var(--text-xl);
+      font-weight: 500;
+      letter-spacing: -0.2px;
+      margin-bottom: 20px;
+    }
+    .section-sub {
+      font-size: var(--text-base);
+      color: var(--muted);
+      margin-top: -12px;
+      margin-bottom: 20px;
+    }
+
+    /* Status cards */
+    .status-list { display: flex; flex-direction: column; gap: 10px; }
+    .status-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 18px;
+    }
+    .status-card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .status-card-title { font-size: var(--text-lg); font-weight: 500; }
+    .status-badge {
+      font-size: var(--text-sm);
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-weight: 500;
+    }
+    .status-pending { background: rgba(251, 191, 36, 0.1); color: #fbbf24; }
+    .status-security_check { background: rgba(147, 197, 253, 0.1); color: #93c5fd; }
+    .status-review { background: rgba(196, 181, 253, 0.1); color: #c4b5fd; }
+    .status-approved { background: var(--success-dim); color: var(--success); }
+    .status-rejected { background: var(--error-dim); color: var(--error); }
+    .status-fraud { background: var(--error-dim); color: var(--error); }
+    .status-card-meta { font-size: var(--text-sm); color: var(--muted); }
+    .status-card-reason { font-size: var(--text-sm); color: var(--error); margin-top: 5px; }
+
+    /* Blocked account banner */
+    .blocked-banner {
+      background: var(--error-dim);
+      border: 1px solid var(--error);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+    }
+    .blocked-banner-title { font-weight: 500; color: var(--error); margin-bottom: 3px; font-size: var(--text-lg); }
+    .blocked-banner-text { font-size: var(--text-base); color: var(--muted); }
+
+    /* Admin table */
+    .admin-table { width: 100%; border-collapse: collapse; }
+    .admin-table th {
+      text-align: left;
+      font-size: var(--text-sm);
+      color: var(--muted);
+      font-weight: 400;
+      padding: 0 12px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .admin-table td {
+      padding: 12px;
+      font-size: var(--text-base);
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+    .admin-table tr:last-child td { border-bottom: none; }
+    .select-status {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 8px;
+      font-size: var(--text-sm);
+      border-radius: 4px;
+      font-family: inherit;
+      cursor: pointer;
+    }
+    .input-reason {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px 8px;
+      font-size: var(--text-sm);
+      border-radius: 4px;
+      font-family: inherit;
+      width: 100%;
+      margin-top: 5px;
+    }
+    .btn-sm {
+      padding: 4px 10px;
+      font-size: var(--text-sm);
+      border-radius: 4px;
+      border: none;
+      background: var(--accent);
+      color: #111318;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    /* Toast */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--surface-2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: var(--text-base);
+      opacity: 0;
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+      z-index: 100;
+      white-space: nowrap;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.success { border-color: var(--success); color: var(--success); }
+    .toast.error { border-color: var(--error); color: var(--error); }
+
+    /* Empty state */
+    .empty { color: var(--muted); font-size: var(--text-base); padding: 28px 0; }
+
+    @media (max-width: 600px) {
+      .nav-inner { padding: 12px 20px; }
+      .main { padding: 24px 20px; }
+      .inner { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+
+<!-- Login / Register page -->
+<div class="page active" id="page-login">
+  <div class="login-box">
+    <div class="auth-wordmark">ИС Банк</div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tab-login-btn">Вход</button>
+      <button class="auth-tab" id="tab-reg-btn">Регистрация</button>
+    </div>
+
+    <!-- Login form -->
+    <form id="login-form">
+      <div class="field" id="f-login">
+        <label>Логин</label>
+        <input type="text" name="username" placeholder="Введите логин" autocomplete="username">
+        <div class="field-error">Неверный логин или пароль</div>
+      </div>
+      <div class="field" id="f-pass">
+        <label>Пароль</label>
+        <input type="password" name="password" placeholder="Введите пароль" autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primary">Войти</button>
+    </form>
+
+    <!-- Register form -->
+    <form id="reg-form" style="display:none">
+      <div class="field" id="f-reg-name">
+        <label>Полное имя</label>
+        <input type="text" name="full_name" placeholder="Иванов Алексей Петрович">
+        <div class="field-error"></div>
+      </div>
+      <div class="field" id="f-reg-username">
+        <label>Логин</label>
+        <input type="text" name="username" placeholder="Придумайте логин" autocomplete="username">
+        <div class="field-error"></div>
+      </div>
+      <div class="field" id="f-reg-password">
+        <label>Пароль</label>
+        <input type="password" name="password" placeholder="Придумайте пароль" autocomplete="new-password">
+        <div class="field-error"></div>
+      </div>
+      <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+    </form>
+
+    <div style="margin-top:18px; font-size:var(--text-sm); color:var(--muted);">
+      Тестовые аккаунты: <strong style="color:var(--text)">ivanov / 123456</strong> (активен),
+      <strong style="color:var(--text)">petrov / 123456</strong> (заблокирован),
+      <strong style="color:var(--text)">admin / admin</strong>
+    </div>
+  </div>
+</div>
+
+<!-- Main app -->
+<div class="page" id="page-app">
+  <nav>
+    <div class="nav-inner">
+      <div class="nav-wordmark">ИС Банк</div>
+      <div class="nav-links">
+        <button class="nav-link active" data-tab="credit">Заявка на кредит</button>
+        <button class="nav-link" data-tab="status">Мои заявки</button>
+        <button class="nav-link" id="admin-tab-btn" style="display:none" data-tab="admin">Панель сотрудника</button>
+      </div>
+      <div class="nav-user">
+        <span id="nav-name"></span>
+        <button class="nav-logout" id="logout-btn">Выйти</button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Credit request tab -->
+  <div class="main tab-content" id="tab-credit">
+    <div class="section-title">Заявка на кредит</div>
+
+    <div class="blocked-banner" id="blocked-banner" style="display:none">
+      <div class="blocked-banner-title">Счёт заблокирован</div>
+      <div class="blocked-banner-text">Подача кредитных заявок невозможна. Обратитесь в отделение банка.</div>
+    </div>
+
+    <div id="credit-form-wrap">
+      <form id="credit-form" style="max-width:420px">
+        <div class="field" id="f-amount">
+          <label>Сумма кредита, руб.<span class="req">*</span></label>
+          <input type="number" name="amount" placeholder="от 1 000 до 500 000">
+          <div class="field-error"></div>
+        </div>
+        <div class="field" id="f-term">
+          <label>Срок кредита, мес.<span class="req">*</span></label>
+          <input type="number" name="term" placeholder="от 1 до 360">
+          <div class="field-error"></div>
+        </div>
+        <div class="field" id="f-purpose">
+          <label>Цель кредитования<span class="req">*</span></label>
+          <textarea name="purpose" placeholder="Опишите цель получения кредита"></textarea>
+          <div class="field-error"></div>
+        </div>
+        <button type="submit" class="btn btn-primary" style="max-width:420px">Отправить заявку</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Status tab -->
+  <div class="main tab-content" id="tab-status" style="display:none">
+    <div class="section-title">Мои заявки</div>
+    <div class="status-list" id="status-list"></div>
+  </div>
+
+  <!-- Admin tab -->
+  <div class="main tab-content" id="tab-admin" style="display:none; max-width:900px">
+    <div class="section-title">Панель сотрудника</div>
+    <div id="admin-wrap"></div>
+  </div>
+</div>
+
+<script>
+const STATUS_LABELS = {
+  pending: 'Ожидает проверки',
+  security_check: 'Проверка службы безопасности',
+  review: 'На рассмотрении сотрудника',
+  approved: 'Одобрено',
+  rejected: 'Отказано',
+  fraud: 'Отклонено (мошенничество)'
+};
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' ' + type : '');
+  setTimeout(() => { t.className = 'toast'; }, 3500);
+}
+
+function setFieldError(fieldId, msg) {
+  const f = document.getElementById(fieldId);
+  if (!f) return;
+  f.classList.add('error');
+  const err = f.querySelector('.field-error');
+  if (err) err.textContent = msg;
+}
+function clearFieldErrors() {
+  document.querySelectorAll('.field.error').forEach(f => f.classList.remove('error'));
+}
+
+// Auth tab toggle
+document.getElementById('tab-login-btn').addEventListener('click', () => {
+  document.getElementById('tab-login-btn').classList.add('active');
+  document.getElementById('tab-reg-btn').classList.remove('active');
+  document.getElementById('login-form').style.display = '';
+  document.getElementById('reg-form').style.display = 'none';
+});
+document.getElementById('tab-reg-btn').addEventListener('click', () => {
+  document.getElementById('tab-reg-btn').classList.add('active');
+  document.getElementById('tab-login-btn').classList.remove('active');
+  document.getElementById('reg-form').style.display = '';
+  document.getElementById('login-form').style.display = 'none';
+});
+
+// Tab switching
+document.querySelectorAll('[data-tab]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const tab = btn.dataset.tab;
+    document.querySelectorAll('.nav-link').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    document.getElementById('tab-' + tab).style.display = '';
+    if (tab === 'status') loadStatus();
+    if (tab === 'admin') loadAdmin();
+  });
+});
+
+// Login
+document.getElementById('login-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  clearFieldErrors();
+  const fd = new FormData(e.target);
+  const res = await fetch('/api/login', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username: fd.get('username'), password: fd.get('password') })
+  });
+  const data = await res.json();
+  if (!data.success) {
+    document.getElementById('f-login').classList.add('error');
+    return;
+  }
+  document.getElementById('f-login').classList.remove('error');
+  initApp(data);
+});
+
+// Register
+document.getElementById('reg-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  clearFieldErrors();
+  const fd = new FormData(e.target);
+  const res = await fetch('/api/register', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      full_name: fd.get('full_name'),
+      username: fd.get('username'),
+      password: fd.get('password')
+    })
+  });
+  const data = await res.json();
+  if (!data.success) {
+    if (data.field) setFieldError('f-reg-' + data.field, data.error);
+    else showToast(data.error, 'error');
+    return;
+  }
+  initApp(data);
+});
+
+async function initApp(loginData) {
+  const me = await fetch('/api/me').then(r => r.json());
+  document.getElementById('nav-name').textContent = me.full_name;
+  document.getElementById('page-login').classList.remove('active');
+  document.getElementById('page-app').classList.add('active');
+
+  const isAdmin = loginData.isAdmin || me.username === 'admin';
+
+  if (isAdmin) {
+    document.getElementById('admin-tab-btn').style.display = '';
+    document.querySelector('[data-tab="credit"]').style.display = 'none';
+    document.querySelector('[data-tab="status"]').style.display = 'none';
+    document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+    document.getElementById('tab-admin').style.display = '';
+    document.getElementById('admin-tab-btn').classList.add('active');
+    document.querySelector('[data-tab="credit"]').classList.remove('active');
+    loadAdmin();
+    return;
+  }
+
+  if (me.account_status === 'blocked') {
+    document.getElementById('blocked-banner').style.display = '';
+    document.getElementById('credit-form-wrap').style.display = 'none';
+  }
+}
+
+// Credit form
+document.getElementById('credit-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  clearFieldErrors();
+  const fd = new FormData(e.target);
+  const res = await fetch('/api/credit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      amount: fd.get('amount'),
+      term: fd.get('term'),
+      purpose: fd.get('purpose')
+    })
+  });
+  const data = await res.json();
+  if (!data.success) {
+    if (data.field) setFieldError('f-' + data.field, data.error);
+    else showToast(data.error, 'error');
+    return;
+  }
+  showToast(data.message, 'success');
+  e.target.reset();
+});
+
+// Status
+async function loadStatus() {
+  const apps = await fetch('/api/credit').then(r => r.json());
+  const list = document.getElementById('status-list');
+  if (!apps.length) {
+    list.innerHTML = '<div class="empty">Заявок пока нет</div>';
+    return;
+  }
+  list.innerHTML = apps.map(a => `
+    <div class="status-card">
+      <div class="status-card-head">
+        <div class="status-card-title">${Number(a.amount).toLocaleString('ru')} руб. · ${a.term} мес.</div>
+        <span class="status-badge status-${a.status}">${STATUS_LABELS[a.status] || a.status}</span>
+      </div>
+      <div class="status-card-meta">${a.purpose} · ${new Date(a.created_at).toLocaleDateString('ru')}</div>
+      ${a.reject_reason ? `<div class="status-card-reason">Причина отказа: ${a.reject_reason}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+// Admin
+async function loadAdmin() {
+  const apps = await fetch('/api/admin/applications').then(r => r.json());
+  const wrap = document.getElementById('admin-wrap');
+  if (!apps.length) {
+    wrap.innerHTML = '<div class="empty">Заявок нет</div>';
+    return;
+  }
+  wrap.innerHTML = `
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Клиент</th>
+          <th>Сумма / Срок</th>
+          <th>Цель</th>
+          <th>Статус</th>
+          <th>Дата</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${apps.map(a => `
+          <tr>
+            <td>${a.full_name}<br><span style="color:var(--muted);font-size:var(--text-sm)">${a.username}</span></td>
+            <td>${Number(a.amount).toLocaleString('ru')} руб.<br><span style="color:var(--muted);font-size:var(--text-sm)">${a.term} мес.</span></td>
+            <td style="max-width:160px">${a.purpose}</td>
+            <td>
+              <select class="select-status" data-id="${a.id}">
+                ${Object.entries(STATUS_LABELS).map(([k,v]) => `<option value="${k}" ${a.status===k?'selected':''}>${v}</option>`).join('')}
+              </select>
+              <input class="input-reason" data-id="${a.id}" placeholder="Причина (для отказа)" value="${a.reject_reason || ''}">
+              <button class="btn-sm" onclick="updateApp(${a.id})">Сохранить</button>
+            </td>
+            <td style="color:var(--muted);font-size:var(--text-sm)">${new Date(a.created_at).toLocaleDateString('ru')}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+async function updateApp(id) {
+  const sel = document.querySelector(`.select-status[data-id="${id}"]`);
+  const inp = document.querySelector(`.input-reason[data-id="${id}"]`);
+  await fetch(`/api/admin/applications/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status: sel.value, reject_reason: inp.value })
+  });
+  showToast('Статус обновлён', 'success');
+}
+
+// Logout
+document.getElementById('logout-btn').addEventListener('click', async () => {
+  await fetch('/api/logout', { method: 'POST' });
+  location.reload();
+});
+
+// Check if already logged in
+fetch('/api/me').then(r => r.ok ? r.json() : null).then(me => {
+  if (me) initApp({ isAdmin: me.username === 'admin' });
+});
+</script>
+</body>
+</html>

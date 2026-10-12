@@ -1,0 +1,49 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "username": "smirnov",
+      "password": "123456",
+      "full_name": "Смирнова Анна Владимировна"
+    },
+    {
+      "id": 2,
+      "username": "kozlov",
+      "password": "123456",
+      "full_name": "Козлов Дмитрий Игоревич"
+    }
+  ],
+  "books": [
+    { "id": 1,  "title": "Мастер и Маргарита",         "author": "М.А. Булгаков",       "year": 1967, "available": 3, "total": 3 },
+    { "id": 2,  "title": "Преступление и наказание",   "author": "Ф.М. Достоевский",    "year": 1866, "available": 0, "total": 2 },
+    { "id": 3,  "title": "Война и мир",                "author": "Л.Н. Толстой",        "year": 1869, "available": 2, "total": 2 },
+    { "id": 4,  "title": "Анна Каренина",              "author": "Л.Н. Толстой",        "year": 1878, "available": 2, "total": 2 },
+    { "id": 5,  "title": "Евгений Онегин",             "author": "А.С. Пушкин",         "year": 1833, "available": 3, "total": 3 },
+    { "id": 6,  "title": "Мёртвые души",               "author": "Н.В. Гоголь",         "year": 1842, "available": 0, "total": 1 },
+    { "id": 7,  "title": "Отцы и дети",                "author": "И.С. Тургенев",       "year": 1862, "available": 2, "total": 2 },
+    { "id": 8,  "title": "Вишнёвый сад",               "author": "А.П. Чехов",          "year": 1904, "available": 2, "total": 2 },
+    { "id": 9,  "title": "Идиот",                      "author": "Ф.М. Достоевский",    "year": 1869, "available": 1, "total": 1 },
+    { "id": 10, "title": "Братья Карамазовы",          "author": "Ф.М. Достоевский",    "year": 1880, "available": 2, "total": 2 },
+    { "id": 11, "title": "Три мушкетёра",              "author": "А. Дюма",             "year": 1844, "available": 3, "total": 3 },
+    { "id": 12, "title": "Граф Монте-Кристо",          "author": "А. Дюма",             "year": 1846, "available": 1, "total": 1 },
+    { "id": 13, "title": "1984",                       "author": "Дж. Оруэлл",          "year": 1949, "available": 1, "total": 2 },
+    { "id": 14, "title": "Маленький принц",            "author": "А. де Сент-Экзюпери", "year": 1943, "available": 4, "total": 4 },
+    { "id": 15, "title": "Над пропастью во ржи",       "author": "Дж. Сэлинджер",       "year": 1951, "available": 1, "total": 1 },
+    { "id": 16, "title": "Портрет Дориана Грея",       "author": "О. Уайльд",           "year": 1891, "available": 2, "total": 2 }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "user_id": 1,
+      "book_id": 13,
+      "status": "active",
+      "ordered_at": "2026-10-11T10:00:00.000Z"
+    }
+  ],
+  "nextId": {
+    "users": 3,
+    "books": 17,
+    "orders": 2,
+    "loans": 1
+  }
+}

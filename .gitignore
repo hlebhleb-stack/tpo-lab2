@@ -1,0 +1,5 @@
+node_modules/
+*.docx
+*.docm
+*.pdf
+.DS_Store
